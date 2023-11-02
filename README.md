@@ -1,3 +1,3 @@
 Matthew McAlarney
 
-CS 4341 Assignment A2
+CS 4341 Intro to AI Assignment A2
