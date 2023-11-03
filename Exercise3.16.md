@@ -54,11 +54,14 @@ train could run off onto the floor.
 
     b. Identify a suitable uninformed search algorithm for this task and explain your choice.
 
-        
+        A suitable uninformed search algorithm for this task is depth-first search. The task of building a connected railway involves a finite state space and there is no need to keep track of a table of reached nodes with depth-first search. This type of search has smaller memory demands than breadth-first search as a result. 
+        In addition, with depth-first search, the frontier is also relatively small. In the case of the railway problem, the frontier only involves the deepest node that is unexpanded, which would be the railway piece most recently connected. 
+        Furthermore, it is already known that all solutions to the railway problem occur on the same level of depth (32 nodes deep), which makes depth-first search a more efficient search algorithm for finding one of these solutions than a breadth-first search, which would instead search for a wider range of paths earlier on in the railway. 
 
     c. Explain why removing any one of the “fork” pieces makes the problem unsolvable.
 
-
+        Removing any one of the "fork" (switch) pieces makes the problem unsolvable because this would result in a different number of track pegs than sockets. 
+        When the number of track pegs is not the same as the number of track sockets, the railway is guaranteed to contain at least one loose end, which would make it impossible for a search algorithm to find a solution (path to the goal state).
 
     d. Give an upper bound on the total size of the state space defined by your formulation.
     (Hint: think about the maximum branching factor for the construction process and the
