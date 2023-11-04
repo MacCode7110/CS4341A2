@@ -67,3 +67,9 @@ train could run off onto the floor.
     (Hint: think about the maximum branching factor for the construction process and the
     maximum depth, ignoring the problem of overlapping pieces and loose ends. Begin by
     pretending that every piece is unique.)
+
+        Upper bound on the total size of the state space:
+        
+            We have 32 pieces total and after the first piece is plotted, we have 31 pieces remaining to plot.
+            There are 20 pieces total that can be rotated in two different directions (16 X curved pieces, 2 X fork pieces with one peg, 2 X fork pieces with two pegs)
+            The upper bound on the total size of the state space can be written as follows: 31! * (12 + (16 * 2) + (2 * 2) + (2 * 2))
