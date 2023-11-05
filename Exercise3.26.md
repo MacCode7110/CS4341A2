@@ -7,7 +7,7 @@ state is at the origin, (0,0), and the goal state is at (x, y).
 
         The branching factor b in the state space is 4. This is because at node (0,0) in the initial state, there are 4 possible states to transition to (4 other nodes that can be reached in other words).
 
-    b. How many distinct states are there at depth k (for k > 0)? 
+    b. How many distinct states are there at depth k (for k > 0)? **
 
         At depth 1, we know that there are 4 distinct states (the current frontier at depth 1) because 4 new nodes have been expanded from the root node as shown in phase a.
         At depth 2, we know that there are 8 distinct states (the current frontier ar depth 2) because 8 new nodes have been expanded from the 4 distinct states as shown in phase c.
@@ -16,14 +16,14 @@ state is at the origin, (0,0), and the goal state is at (x, y).
     c. What is the maximum number of nodes expanded by breadth-first tree search? **
 
         Breadth-first search expands all successors of the current node.
-        For a tree search, we do not store the explored set of states since each state cannot be visited multiple times.
+        For a tree search, we can visit the same node multiple times.
         For a solution at depth 1, there is a maximum of 4 nodes that can be expanded from the root node.
-        For a solution at depth 2, there is a maximum of 16 nodes that can be expanded from the 4 nodes at depth 1. 
+        For a solution at depth 2, there is a maximum of 16 nodes that can be expanded including the 4 nodes expanded from the root node. 
         As part of running the goal test on a tree, the maximum number of nodes expanded by breadth-first tree search is the branching factor raised to the depth of the solution, which can be written as 4^(x + y) in this scenario. x + y always sums to the depth/level of the solution in the tree.
 
     d. What is the maximum number of nodes expanded by breadth-first graph search? **
 
-        For a graph search, we store the explored set of states and check for redundant paths since a given state can be visited multiple times.
+        For a graph search, we cannot visit the same node multiple times.
         For a solution at depth of 1, there is a maximum of 5 distinct states that have been explored.
         For a solution at depth of 2, there is a maximum of 13 distinct states that have been explored.
 

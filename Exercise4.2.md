@@ -60,3 +60,6 @@ Explain how to formulate the problem so that it could be solved by simulated ann
     How the new problem could be solved using simulated annealing:
 
         *How to think about this?*
+        Consider cost difference only.
+        If neighboring state has lower cost, always accepted.
+        If neighboring state has a higher cost, it can be accepted with a certian probability.
