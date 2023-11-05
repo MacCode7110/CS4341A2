@@ -48,4 +48,5 @@ state is at the origin, (0,0), and the goal state is at (x, y).
 
     h. Does h remain admissible if some links are added between nonadjacent states?
 
-        
+        h does not remain admissible if some links are added between nonadjacent states. 
+        Reasoning: If some links are added between nonadjacent states, then this means that some states will be connected through diagonal links (as all adjacent states are connected through either vertical or horizontal links). If the initial state is (0,0) and the goal state is (1,1) for instance, then h will still produce a path length estimate of 2 while the cheapest path length is actually 1. Thus, there is at least one case where the heuristic h overestimates the cost to reach a goal state from the initial state, which means that h cannot be admissible.
