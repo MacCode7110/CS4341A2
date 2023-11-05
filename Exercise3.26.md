@@ -7,7 +7,7 @@ state is at the origin, (0,0), and the goal state is at (x, y).
 
         The branching factor b in the state space is 4. This is because at node (0,0) in the initial state, there are 4 possible states to transition to (4 other nodes that can be reached in other words).
 
-    b. How many distinct states are there at depth k (for k > 0)? **
+    b. How many distinct states are there at depth k (for k > 0)? 
 
         At depth 1, we know that there are 4 distinct states (the current frontier at depth 1) because 4 new nodes have been expanded from the root node as shown in phase a.
         At depth 2, we know that there are 8 distinct states (the current frontier ar depth 2) because 8 new nodes have been expanded from the 4 distinct states as shown in phase c.
