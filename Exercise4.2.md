@@ -59,7 +59,17 @@ Explain how to formulate the problem so that it could be solved by simulated ann
 
     How the new problem could be solved using simulated annealing:
 
-        *How to think about this?*
-        Consider cost difference only.
-        If neighboring state has lower cost, always accepted.
-        If neighboring state has a higher cost, it can be accepted with a certian probability.
+        Simulated annealing is used to solve optimization problems and is designed to find the best possible solution.
+        With the introduction of degrees of rotation for all pieces, this version of the railway building problem is now an optimization problem because there is now a best possible solution that can be achieved.
+        The best possible solution in this version of the railway building problem is the goal state where the degrees of rotation of the 32 connected pieces sums to the smallest possible value. This smallest possible sum of the degrees of rotation of all connected railway pieces is the global minimum that a simulated annealing algorithm can find.
+        Simulated annealing is capable of solving the new railway building problem, and it also works because the updated state space is now continuous; the continuous state space allows for small adjustments to be made to the degrees of rotation for each railway piece. These small adjustments makes it more likely that simulated annealing avoids the issue of getting stuck in local minima.
+        
+        Algorithmic steps that simulated annealing can use to find the best possible solution to the railway building problem:
+            1. Plot the first railway piece picked trivially from the subset of unconnected railway pieces on the floor (this creates the initial state). This action is always accepted regardless of the chosen starting piece as it brings the agent closer to a goal state.
+            2. Pick a move at random:
+                a. The action of connecting a railway piece is accepted as long as the specified piece can be connected to the previously connected railway piece. The connect railway piece action also brings the agent closer to a goal state (a way of improving the current situation).
+                b. The action of removing a connected railway piece is only accepted if (1) no railway pieces from the subset of unconnected pieces can be connected to the previously connected piece OR (2) no railway pieces from the subset of unconnected pieces can be connected to the previously connected piece without causing an overlap with another piece.
+                c. The action of adjusting the degree of rotation of any connected railway piece:
+                    I. Is always accepted if the specified degree of rotation is smaller than the current degree of rotation of the selected piece and is smaller than the degree of rotation of the previously connected piece. A state space of connected pieces with continually smaller degrees of rotation always takes steps towards minimizing the sum of all degrees of rotation, which brings the agent closer to the best possible goal state/solution (improves the current situation).
+                    II. Is accepted with a probability less than 1 (likely between 0.5 and 0.99) if the specified degree of rotation is greater than or equal to the current degree of rotation of the selected piece and is still smaller than or equal to the degree of rotation of the previously connected piece. This move is objectively worse than the one in item I as it will never bring the agent closer to the best possible solution, and so it is accepted with a probability less than 1.
+                    III. Is accepted with a probability less than 1 (likely between 0.01 and 0.49) if the specified degree of rotation is greater than the current degree of rotation of the selected piece and is greater than the degree of rotation of the previously connected piece. This move is objectively the worst one compared to items I and II as it pushes the agent further away from the best possible solution, and so it is accepted with a probability that is less than 1 and less than the range of probabilities listed in item II.
