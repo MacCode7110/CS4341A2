@@ -22,7 +22,7 @@ state is at the origin, (0,0), and the goal state is at (x, y).
 
     d. What is the maximum number of nodes expanded by breadth-first graph search? 
 
-        For a graph search, we cannot visit the same node multiple times. There are no repeated paths or loops. Final maximum should be a quadratic result.
+        For a graph search, we cannot visit the same node multiple times. There are no repeated paths. Final maximum should be a quadratic result.
         The maximum number of nodes expanded is cumulative through the graph depths.
         For a solution at depth 1, there is a maximum of 1 node that has been expanded (the root node).
         For a solution at depth 2, there is a maximum of 5 nodes that have been expanded including the root node (the number of nodes expanded is cumulative). 

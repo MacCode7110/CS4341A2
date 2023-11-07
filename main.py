@@ -61,7 +61,7 @@ class HillClimbingSolverForTSP:
             if path[i] in node_list:
                 if i < len(path) - 1:
                     graph_edge_list = self.tsp_problem[path[i]]
-                    graph_edge =
+                    graph_edge = 
                     path_length += self.tsp_problem[]
 
 

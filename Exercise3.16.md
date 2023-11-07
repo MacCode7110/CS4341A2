@@ -16,9 +16,10 @@ train could run off onto the floor.
 
         Assumptions:
             1. In order for the railway to have no overlapping tracks and loose ends where a train could run off onto the floor, all railway tracks must be connected to each other.
-            2. Curved pieces and fork pieces can be flipped over to curve in either direction.
-            3. Two railway pieces form a connection when the socket of one piece locks with the peg of another piece.
-            4. There is a total of 32 pieces in the set of railway pieces. The set of railway pieces is made up of the following distinct tracks as shown in Figure 3.32:
+            2. The railway system takes the form of a graph and each railway piece is a node. The connections between railway pieces are edges.
+            3. Curved pieces and fork pieces can be flipped over to curve in either direction.
+            4. Two railway pieces form a connection when the socket of one piece locks with the peg of another piece.
+            5. There is a total of 32 pieces in the set of railway pieces. The set of railway pieces is made up of the following distinct tracks as shown in Figure 3.32:
                 a. Straight pieces (quantity of 12)
                 b. Curved pieces (quantity of 16)
                 c. Fork pieces with 2 pegs (quantity of 2)
@@ -37,10 +38,10 @@ train could run off onto the floor.
 
         Actions: 
 
-            1. Connect Railway Piece: A railway piece picked out of the subset of unconnected railway pieces can be connected to an open socket or peg of the piece that was previously connected to the railway.
+            1. Connect Railway Piece: A railway piece picked out of the subset of unconnected railway pieces can be connected to an open socket or peg of a piece that was previously connected to the railway. The previously connected piece that is selected in the following priority is (1) if a loop was just connected together, a connected fork piece with at least one remaining open peg or socket or (2) else, the piece that was most recently connected to the railway. 
             2. Remove Railway Piece: 
-                a. If there are no railway pieces in the subset of unconnected pieces that can connect to the open socket or peg of the piece that was previously connected to the railway, then this piece that was previously connected to the railway will be removed and placed back in the subset of unconnected railway pieces.
-                b. If there are no railway pieces in the subset of unconnected pieces that can connect to the open socket or peg of the piece that was previously connected to the railway without overlapping another railway piece, then the piece that was previously connected to the railway will be removed and placed back in the subset of unconnected railway pieces.
+                a. If there are no railway pieces in the subset of unconnected pieces that can connect to the open socket or peg of a piece that was previously connected to the railway, then the selected piece that was previosuly connected to the railway will be removed and placed back in the subset of unconnected railway pieces. The previously connected piece that is selected in the following priority is (1) if a loop was just connected together, a connected fork piece with at least one remaining open peg or socket or (2) else, the piece that was most recently connected to the railway.
+                b. If there are no railway pieces in the subset of unconnected pieces that can connect to the open socket or peg of a piece that was previously connected to the railway without overlapping another railway piece, then the selected piece that was previously connected to the railway will be removed and placed back in the subset of unconnected railway pieces. The previously connected piece that is selected in the following priority is (1) if a loop was just connected together, a connected fork piece with at least one remaining open peg or socket or (2) else, the piece that was most recently connected to the railway.
         
         Transitional Model:
         
@@ -55,11 +56,11 @@ train could run off onto the floor.
     b. Identify a suitable uninformed search algorithm for this task and explain your choice.
 
         A suitable uninformed search algorithm for this task is depth-first search. 
-        (1) The state space for the railway building problem takes the form of a tree-like structure where loops are needed to prevent loose ends from occuring. Fork pieces allow for the construction of branches in the railway to form a tree-like structure. Loops are possible because in a tree-like search the same node can be visited multiple times.
-        (2) The task of building a connected railway not only takes the form of a tree-like structure, but also involves a finite state space. These two pieces of information form a problem that fits depth-first search as this algorithm does perform well on finite tree-shaped state spaces with memory complexity of O(bm). Thus, there is no need to keep track of a table of reached nodes in the railway building problem and the depth-first search algorithm does not require keeping a table of reached nodes either.
+        (1) The state space for the railway building problem takes the form of a graph structure where loops are needed to prevent loose ends from occurring. Fork and curve pieces allow for the construction of loops in the railway to form a graph structure. Loop formations are allowed in graph structures.
+        (2) The task of building a connected railway not only takes the form of a graph structure, but also involves a finite state space. These two pieces of information form a problem that fits depth-first search as this algorithm does perform well on finite graph-shaped state spaces. There is no need to keep track of a table of reached nodes in the railway building problem and the depth-first search algorithm does not require keeping a table of reached nodes either.
         (3) The railway problem structure and depth-first search have smaller memory demands than breadth-first search as a result of not needing to keep track of a table of reached nodes; breadth-first search would not be the ideal algorithm choice for this problem.
         (4) In addition, with depth-first search, the frontier is also relatively small. In the case of the railway problem, depth-first search is a good fit because the frontier only involves the deepest node that is unexpanded, which would be the railway piece most recently connected. 
-        (5) Furthermore, it is already known that all solutions to the railway problem occur on the same level of depth (32 nodes deep), which makes depth-first search a more efficient search algorithm for finding one of these solutions than a breadth-first search, which would instead search for a wider range of paths earlier on in the railway. 
+        (5) Furthermore, it is already known that all solutions to the railway problem occur only when 32 railway pieces are connected, which makes depth-first search a more efficient search algorithm (faster and fewer number of actions taken) for finding one of these solutions than a breadth-first search, which would instead unnecessarily search for a wider range of paths earlier on in the railway system. 
         
     c. Explain why removing any one of the “fork” pieces makes the problem unsolvable.
 
@@ -69,7 +70,7 @@ train could run off onto the floor.
     d. Give an upper bound on the total size of the state space defined by your formulation.
     (Hint: think about the maximum branching factor for the construction process and the
     maximum depth, ignoring the problem of overlapping pieces and loose ends. Begin by
-    pretending that every piece is unique.) **
+    pretending that every piece is unique.) 
 
         Upper bound on the total size of the state space:
         
