@@ -24,7 +24,7 @@ Explain how to formulate the problem so that it could be solved by simulated ann
         Since the state space is continuous, each state now holds the following information:
             1. The first railway piece to be plotted on the floor, which is chosen trivially from the set.
             2. The number of connected railway pieces.
-            3. A pointer for each connected railway piece and the degree of rotation for each connected piece.
+            3. A pointer to each connected railway piece and the degree of rotation for each connected piece.
     
     Initial State: 
         The first railway piece to be plotted on the floor, which is chosen trivially from the set.
