@@ -26,9 +26,10 @@ train could run off onto the floor.
                 d. Fork pieces with 1 peg (quantity of 2)
 
         State Space: 
-            Two pieces of information make up the state space:
+            Three pieces of information make up the state space:
                 1. The first railway piece to be plotted on the floor, which is chosen trivially from the set.
                 2. The number of connected railway pieces.
+                3. A pointer to the most recently connected railway piece.
     
         Initial State: 
             The first railway piece to be plotted on the floor, which is chosen trivially from the set.
