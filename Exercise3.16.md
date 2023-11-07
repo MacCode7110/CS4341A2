@@ -54,11 +54,13 @@ train could run off onto the floor.
 
     b. Identify a suitable uninformed search algorithm for this task and explain your choice.
 
-        A suitable uninformed search algorithm for this task is depth-first search. The task of building a connected railway involves a finite state space. Thus, there is no need to keep track of a table of reached nodes in the railway building problem and the depth-first search algorithm does not require keeping a table of reached nodes either.
-        The railway problem structure and depth-first search have smaller memory demands than breadth-first search as a result of not needing to keep track of a table of reached nodes; breadth-first search would not be the ideal algorithm choice for this problem.
-        In addition, with depth-first search, the frontier is also relatively small. In the case of the railway problem, depth-first search is a good fit because the frontier only involves the deepest node that is unexpanded, which would be the railway piece most recently connected. 
-        Furthermore, it is already known that all solutions to the railway problem occur on the same level of depth (32 nodes deep), which makes depth-first search a more efficient search algorithm for finding one of these solutions than a breadth-first search, which would instead search for a wider range of paths earlier on in the railway. 
-
+        A suitable uninformed search algorithm for this task is depth-first search. 
+        (1) The state space for the railway building problem takes the form of a tree-like structure where loops are needed to prevent loose ends from occuring. Fork pieces allow for the construction of branches in the railway to form a tree-like structure. Loops are possible because in a tree-like search the same node can be visited multiple times.
+        (2) The task of building a connected railway not only takes the form of a tree-like structure, but also involves a finite state space. These two pieces of information form a problem that fits depth-first search as this algorithm does perform well on finite tree-shaped state spaces with memory complexity of O(bm). Thus, there is no need to keep track of a table of reached nodes in the railway building problem and the depth-first search algorithm does not require keeping a table of reached nodes either.
+        (3) The railway problem structure and depth-first search have smaller memory demands than breadth-first search as a result of not needing to keep track of a table of reached nodes; breadth-first search would not be the ideal algorithm choice for this problem.
+        (4) In addition, with depth-first search, the frontier is also relatively small. In the case of the railway problem, depth-first search is a good fit because the frontier only involves the deepest node that is unexpanded, which would be the railway piece most recently connected. 
+        (5) Furthermore, it is already known that all solutions to the railway problem occur on the same level of depth (32 nodes deep), which makes depth-first search a more efficient search algorithm for finding one of these solutions than a breadth-first search, which would instead search for a wider range of paths earlier on in the railway. 
+        
     c. Explain why removing any one of the “fork” pieces makes the problem unsolvable.
 
         Removing any one of the "fork" (switch) pieces makes the problem unsolvable because this would result in an incorrect number of branches preventing the construction of a complete railway. 
