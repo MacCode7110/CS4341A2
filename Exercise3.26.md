@@ -7,27 +7,28 @@ state is at the origin, (0,0), and the goal state is at (x, y).
 
         The branching factor b in the state space is 4. This is because at node (0,0) in the initial state, there are 4 possible states to transition to (4 other nodes that can be reached in other words).
 
-    b. How many distinct states are there at depth k (for k > 0)? **
+    b. How many distinct states are there at depth k (for k > 0)? 
 
         At depth 1, we know that there are 4 distinct states (the current frontier at depth 1) because 4 new nodes have been expanded from the root node as shown in phase a.
         At depth 2, we know that there are 8 distinct states (the current frontier ar depth 2) because 8 new nodes have been expanded from the 4 distinct states as shown in phase c.
         At depth k for k > 0, there are (4 * k) distinct states.
 
-    c. What is the maximum number of nodes expanded by breadth-first tree search? **
+    c. What is the maximum number of nodes expanded by breadth-first tree search? 
 
         Breadth-first search expands all successors of the current node.
-        For a tree search, we can visit the same node multiple times.
-        For a solution at depth 1, there is a maximum of 4 nodes that can be expanded from the root node.
-        For a solution at depth 2, there is a maximum of 16 nodes that can be expanded including the 4 nodes expanded from the root node. 
-        As part of running the goal test on a tree, the maximum number of nodes expanded by breadth-first tree search is the branching factor raised to the depth of the solution, which can be written as 4^(x + y) in this scenario. x + y always sums to the depth/level of the solution in the tree.
+        For a tree search, we can visit the same node multiple times. Tree search does not care about repeating nodes. A given node cannot be expanded multiple times but it can repeat in the tree and therefore be visited multiple times. Final maximum should be an exponential result.
+        According to the textbook, the time complexity of breadth-first search for a solution at depth d with branching factor b is O(b^d). The depth of a solution at coordinate (x, y) can be calculated as d = x + y. 
+        Therefore, the maximum number of nodes expanded by breadth-first tree search for a solution at depth d is 4^((x + y) - 1) since leaf nodes on the frontier would not be expanded yet.
 
-    d. What is the maximum number of nodes expanded by breadth-first graph search? **
+    d. What is the maximum number of nodes expanded by breadth-first graph search? 
 
-        For a graph search, we cannot visit the same node multiple times.
-        For a solution at depth of 1, there is a maximum of 5 distinct states that have been explored.
-        For a solution at depth of 2, there is a maximum of 13 distinct states that have been explored.
-
-        The maximum number of nodes expanded by breadth-first graph search according to the set of explored states is 1 + 2(x + y)(x + y + 1) where x + y is equal to the current depth.
+        For a graph search, we cannot visit the same node multiple times. There are no repeated paths or loops. Final maximum should be a quadratic result.
+        The maximum number of nodes expanded is cumulative through the graph depths.
+        For a solution at depth 1, there is a maximum of 1 node that has been expanded (the root node).
+        For a solution at depth 2, there is a maximum of 5 nodes that have been expanded including the root node (the number of nodes expanded is cumulative). 
+        For a solution at depth 3, there would be a maximum of 13 nodes that have been expanded including the 5 nodes that have been expanded for depth 2.
+        For a solution at depth d, the maximum number of nodes expanded by breadth-first graph search takes the form of a quadratic equation:
+        2(d^2) - 2d + 1 where d = x + y for a goal state at coordinate (x, y) as mentioned in part c.
 
     e. Is h = |u − x| + |v − y| an admissible heuristic for a state at (u, v)? Explain.
 
