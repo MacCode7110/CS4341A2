@@ -28,18 +28,18 @@ state is at the origin, (0,0), and the goal state is at (x, y).
         For a solution at depth 2, there is a maximum of 5 nodes that have been expanded including the root node (the number of nodes expanded is cumulative). 
         For a solution at depth 3, there would be a maximum of 13 nodes that have been expanded including the 5 nodes that have been expanded for depth 2.
         For a solution at depth d, the maximum number of nodes expanded by breadth-first graph search takes the form of a quadratic equation:
-        2(d^2) - 2d + 1 where d = x + y for a goal state at coordinate (x, y) as mentioned in part c.
+        2(d^2) - 2d + 1 where d = x + y for a goal state at coordinate (x, y) as mentioned in part c. The + 1 at the end accounts for the expansion of the root node.
 
     e. Is h = |u − x| + |v − y| an admissible heuristic for a state at (u, v)? Explain.
 
         Heuristic function h(n) = estimated cost of the cheapest path from the state at node n to a goal state.
-        We know that a heuristic function is admissible if it never overestimates the cost to reach a goal.
+        We know that a heuristic function is admissible if it never overestimates the cost to reach a goal for every node n.
 
-        Yes, h = |u - x| + |v - y| is an admissible heuristic function. This is because the heuristic function calculates the cheapest grid distance between a state at (u, v) and the goal state. This heuristic will never overestimate the distance between these two states because the only directions that can be used to move through the grid are up, down, left, and right. For exmaple, it is impossible to move diagonally from initial (0,0) to goal state (1,1). The heuristic function calculates the cheapest path, which in this case is 2. 
+        Yes, h = |u - x| + |v - y| is an admissible heuristic function. This is because the heuristic function calculates the cheapest grid distance between a state at (u, v) and the goal state. This heuristic will never overestimate the distance between these two states for each node because the only directions that can be used to move through the grid are up, down, left, and right. For exmaple, it is impossible to move diagonally from initial (0,0) to goal state (1,1). The heuristic function calculates the cheapest path, which in this case is 2. 
 
     f. How many nodes are expanded by A∗ graph search using h?
 
-        When using A* graph search using heuristic h, we are really computing a best-first search using evaluation function f(n) = g(n) + h(n) where g(n) is the path cost from the initial state to node n and h(n) is the heuristic function.
+        When using A* graph search using heuristic h, we are really computing a best-first search using evaluation function f(n) = g(n) + h(n) where g(n) is the path cost from the initial state to node n and h(n) is the heuristic function passed as a parameter.
         Therefore, we know that x + y nodes are expanded using A* graph search with heuristic h. x + y is always equal to the length of the cheapest/shortest path from the initial state to the goal state.
 
     g. Does h remain admissible if some links are removed?
