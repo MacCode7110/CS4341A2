@@ -75,6 +75,5 @@ train could run off onto the floor.
 
         Upper bound on the total size of the state space:
         
-            We have 32 pieces total and after the first piece is plotted, we have 31 pieces remaining to plot.
-            There are 20 pieces total that can be rotated in two different directions (16 X curved pieces, 2 X fork pieces with one peg, 2 X fork pieces with two pegs)
-            The upper bound on the total size of the state space can be written as follows: 31! * (12 + (16 * 2) + (2 * 2) + (2 * 2))
+            We have 32 pieces total to plot, and there are 20 pieces total that can be rotated in two different directions (16 X curved pieces, 2 X fork pieces with one peg, 2 X fork pieces with two pegs). There are also 12 straight railway pieces.
+            The upper bound on the total size of the state space accounting for the two different directions that 20 pieces can be rotated towards takes the form of a permutation, which can be written as follows: 32! * (12 + (16 * 2) + (2 * 2) + (2 * 2))

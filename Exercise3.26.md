@@ -18,7 +18,7 @@ state is at the origin, (0,0), and the goal state is at (x, y).
         Breadth-first search expands all successors of the current node.
         For a tree search, we can visit the same node multiple times. Tree search does not care about repeating nodes. A given node cannot be expanded multiple times but it can repeat in the tree and therefore be visited multiple times. Final maximum should be an exponential result.
         According to the textbook, the time complexity of breadth-first search for a solution at depth d with branching factor b is O(b^d). The depth of a solution at coordinate (x, y) can be calculated as d = x + y. 
-        Therefore, the maximum number of nodes expanded by breadth-first tree search for a solution at depth d is 4^((x + y) - 1) since leaf nodes on the frontier would not be expanded yet.
+        Therefore, the maximum number of nodes expanded by breadth-first tree search for a solution at depth d is 4^((x + y) - 1), and the -1 accounts for the fact that leaf nodes on the frontier would not be expanded yet.
 
     d. What is the maximum number of nodes expanded by breadth-first graph search? 
 
