@@ -73,6 +73,7 @@
 # Part a - Hill-climbing algorithm implementation to solve TSPs:
 import operator
 import random
+from operator import itemgetter
 
 
 class HillClimbingSolverForTSP:
@@ -186,14 +187,16 @@ class HillClimbingSolverForTSP:
 # From a random selection of n individuals from the population, the most fit individual is selected as a parent for the next generation of paths.
 # This process is repeated twice so that two of the most fit parents from their respective group selections can then crossover.
 # Crossover process:
-# We randomly select a crossover point to split each of the parent strings (tsp paths).
-# The parts are recombined to form two children paths, one with the
-# first part of the path of parent 1 and the second part of the path of parent 2.
-# The other with the second part of the path of parent 1 and the first part of the path of parent 2.
+# Parts of the parent paths are combined to form a child path using a process called Order One Crossover: https://www.baeldung.com/cs/ga-order-one-crossover.
+# The child path consists of a randomly selected part of the path of the first parent and the part of the path
+# of the second parent that does not appear in the randomly selected part. For the tsp problem,
+# this type of crossover ensures that there are no nodes that appear more than once in the child path other than the starting node.
+# We use this crossover process to generate two child paths from two parent paths that are appended to the new generation population.
+# In addition, elitism is implemented during the crossover process through appending both parent paths used to create the two child paths to the new generation population.
 # Mutation process:
 # Determines how often an offspring state has a random mutation to its tsp path.
-# When an offspring has been generated, two cities in a tsp path swap positions
-# with probability equal to the mutation rate.
+# When an offspring has been generated, a pair of cities in its tsp path swap positions
+# with probability less than or equal to the mutation rate.
 
 class GeneticAlgorithmSolverForTSP:
 
@@ -224,24 +227,82 @@ class GeneticAlgorithmSolverForTSP:
 
     def generate_initial_population(self):
         initial_population = []
-        population_size = 10
+        population_size = (len(list(self.tsp_problem.keys()))) * 3
         for i in range(population_size):
             initial_population.append(self.generate_individual_path())
         return initial_population
 
-    def select_parent_paths(self, population_fitness_score_dictionary_list):
-        population_fitness_score_dictionary_list_copy = []
-        selected_parent_paths_and_fitness_scores = []
-        most_fit_parent_paths_and_fitness_scores = []
-        selection_number = 5
+    # Tournament selection executed in select_parent_paths:
+    def select_parent_paths_indices(self, population_fitness_score_list):
+        most_fit_parent_paths_indices_and_fitness_scores_list = []
+        most_fit_parent_paths_indices = []
+        selection_number = (len(list(self.tsp_problem.keys())))
         for i in range(2):
-            population_fitness_score_dictionary_list_copy = population_fitness_score_dictionary_list.copy()
+            population_fitness_score_list_copy = population_fitness_score_list.copy()
+            selected_parent_paths_indices_and_fitness_scores_list = []
+            selected_fitness_scores_placeholder_list = []
             for j in range(selection_number):
-                dictionary = population_fitness_score_dictionary_list_copy[random.randint(0, (len(population_fitness_score_dictionary_list_copy)) - 1)]
-                selected_parent_paths_and_fitness_scores.append(dictionary)
-                population_fitness_score_dictionary_list_copy.remove(dictionary)
+                dictionary = population_fitness_score_list_copy[
+                    random.randint(0, (len(population_fitness_score_list_copy)) - 1)]
+                selected_parent_paths_indices_and_fitness_scores_list.append(dictionary)
+                selected_fitness_scores_placeholder_list.append(dictionary.values())
+                population_fitness_score_list_copy.remove(dictionary)
+            index_of_highest_fitness_score = selected_fitness_scores_placeholder_list.index(
+                max(selected_fitness_scores_placeholder_list))
+            most_fit_parent_paths_indices_and_fitness_scores_list.append(
+                selected_parent_paths_indices_and_fitness_scores_list[index_of_highest_fitness_score])
+        for k in range(len(most_fit_parent_paths_indices_and_fitness_scores_list)):
+            most_fit_parent_paths_indices.append(most_fit_parent_paths_indices_and_fitness_scores_list[k].keys())
+        return most_fit_parent_paths_indices
 
-        return most_fit_parent_paths_and_fitness_scores
+    # Order one crossover executed in perform_order_one_crossover_on_parent_paths:
+    def perform_order_one_crossover_on_parent_paths(self, most_fit_parent_paths_indices, population):
+        child_path = []
+        first_child_component = []
+        second_child_component = []
+        random_index_1 = random.randint(0, len(population[(most_fit_parent_paths_indices[0])]) - 1)
+        random_index_2 = random.randint(0, len(population[(most_fit_parent_paths_indices[0])]) - 1)
+        sub_path_start_index = min(random_index_1, random_index_2)
+        sub_path_end_index = max(random_index_1, random_index_2)
+        for i in range(sub_path_start_index, sub_path_end_index):
+            first_child_component.append(population[(most_fit_parent_paths_indices[0])][i])
+        for j in range(len(population[(most_fit_parent_paths_indices[1])])):
+            if population[(most_fit_parent_paths_indices[1])][j] not in first_child_component:
+                second_child_component.append(population[(most_fit_parent_paths_indices[1])][j])
+        for k in range(len(first_child_component) + len(second_child_component)):
+            if sub_path_start_index <= k <= sub_path_end_index:
+                child_path.append(first_child_component[k])
+            else:
+                child_path.append(second_child_component[k])
+        child_path[len(child_path) - 1] = child_path[0]
+        return child_path
+
+    def generate_new_generation_population(self, most_fit_parent_paths_indices, population):
+        new_generation_population = []
+        for i in range(len(most_fit_parent_paths_indices)):
+            child_path = self.perform_order_one_crossover_on_parent_paths(most_fit_parent_paths_indices, population)
+            new_generation_population.append(child_path)
+            # Elitism implemented in line below to guarantee that overall population fitness will never decrease over time:
+            new_generation_population.append(population[(most_fit_parent_paths_indices[i])])
+        return new_generation_population
+
+    def mutate_individual_path(self, path):
+        mutation_rate = 0.03
+        for i in range(len(path)):
+            if random.random() <= mutation_rate:
+                random_index_1 = random.randint(0, len(path) - 1)
+                random_index_2 = random.randint(0, len(path) - 1)
+                placeholder_node = path[random_index_1]
+                path[random_index_1] = path[random_index_2]
+                path[random_index_2] = placeholder_node
+        path[len(path) - 1] = path[0]
+        return path
+
+    def generate_mutated_paths(self, population):
+        mutated_population = []
+        for i in range(len(population)):
+            mutated_population.append(self.mutate_individual_path(population[i]))
+        return mutated_population
 
     def get_graph_edge_object(self, end_node, graph_edge_list):
         for i in range(len(graph_edge_list)):
@@ -259,23 +320,43 @@ class GeneticAlgorithmSolverForTSP:
                     path_length += graph_edge_object.distance
         return path_length
 
-    def calculate_population_fitness_scores(self, population):
-        population_fitness_score_dictionary_list = []
+    def calculate_fitness_scores_for_each_population_index(self, population):
+        fitness_scores_for_each_population_index_list = []
         for i in range(len(population)):
-            population_fitness_score_dictionary_list.append(
-                {population[i]: (100 - self.calculate_path_length(population[i]))})
-        return population_fitness_score_dictionary_list
+            fitness_scores_for_each_population_index_list.append(
+                {i: (100 - self.calculate_path_length(population[i]))})
+        return fitness_scores_for_each_population_index_list
+
+    def get_highest_population_fitness_score(self, fitness_score_for_each_population_index_list):
+        fitness_score_list = []
+        for i in range(len(fitness_score_for_each_population_index_list)):
+            fitness_score_list.append(fitness_score_for_each_population_index_list[i])
+        return max(fitness_score_list), fitness_score_list.index(max(fitness_score_list))
 
     def run_genetic_algorithm(self):
-        path = self.generate_initial_population()
-        population_fitness_score_dictionary_list = self.calculate_population_fitness_scores()
-        most_fit_parent_paths = self.select_parent_paths(population_fitness_score_dictionary_list)
+        population = self.generate_initial_population()
+        fitness_score_for_each_population_index_list = self.calculate_fitness_scores_for_each_population_index(population)
+        current_highest_fitness_score = self.get_highest_population_fitness_score(
+            fitness_score_for_each_population_index_list)
+        shortest_path = []
+
+        # Run the algorithm for 50 generations to ensure that enough time has elapsed:
+        for i in range(50):
+            most_fit_parent_paths_indices = self.select_parent_paths_indices(fitness_score_for_each_population_index_list)
+            new_generation_population = self.generate_new_generation_population(most_fit_parent_paths_indices, population)
+            mutated_population = self.generate_mutated_paths(new_generation_population)
+            population = mutated_population
+            fitness_score_for_each_population_index_list = self.calculate_fitness_scores_for_each_population_index(population)
+            current_highest_fitness_score, shortest_path_index = self.get_highest_population_fitness_score(
+                fitness_score_for_each_population_index_list)
+            shortest_path = population[shortest_path_index]
 
         print("Genetic Algorithm Output: The shortest path that visits each node "
               "exactly once and returns to the starting node "
               "for Traveling Salesmen Problem Configuration " + str(self.problem_configuration_number) + " is " +
-              "".join(path) +
-              " with a length of " + str(path_length))
+              "".join(shortest_path) +
+              " with a length of " + str(
+            self.calculate_path_length(shortest_path)) + " and a fitness score of " + current_highest_fitness_score)
 
 
 # Test data used to test both the hill-climbing and genetic algorithm implementations:
