@@ -61,7 +61,7 @@
 # that visits all nodes at random to begin comparing against in the run_hill_climbing_algorithm function.
 
 # Assumptions:
-#   a. For every tsp problem, each node must be connected to every other node through edges in the graph. (This assumption is fine)
+#   a. For every tsp problem, each node must be connected to every other node through edges in the graph.
 
 # ---------------
 
@@ -172,18 +172,22 @@ class HillClimbingSolverForTSP:
 # State space:
 # Each state contains the current generated path and the length of the path.
 # A gene is a single node/city, and an individual is a tsp path made up of some number of genes.
+
 # Initial population:
 # A list of tsp paths randomly generated and used to start running the rest of the algorithm.
+
 # Fitness score:
 # The fitness score of each state corresponds to the length of the tsp path.
 # In this case, the fitness score is calculated by subtracting the length of the tsp path from 500,
 # which is a trivially chosen integer.
 # Shorter tsp paths will have higher fitness scores and longer tsp paths will have lower fitness scores in this case.
+
 # Selection process:
 # States selected to be parents of the next generation are selected from a list of paths with fitness scores
 # using tournament selection: https://www.geeksforgeeks.org/tournament-selection-ga/
 # From a random selection of n individuals from the population, the most fit individual is selected as a parent for the next generation of paths. The selection number n is calculated as the number of edge connections each node has to every other node.
 # This process is repeated while the selection number is less than or equal to the size of the population. The size of the population in the selection loop decreases; parents selected as the fittest individuals from a selection are excluded from the population size in the next iteration of the selection loop so that they are not reselected for a tournament again. This exclusion prevents duplicate fittest parent paths from being returned in the select_parent_path_indices function. For the first two test configurations for the algorithm, the 10 fittest parent paths are selected from their respective group selections. These fittest parent paths are then used in the crossover process.
+
 # Crossover process:
 # Parts of the parent paths are combined to form a child path using a process called Order One Crossover: https://www.baeldung.com/cs/ga-order-one-crossover.
 # The child path consists of a randomly selected part of the path of the first parent and the part of the path
@@ -191,6 +195,7 @@ class HillClimbingSolverForTSP:
 # this type of crossover ensures that there are no nodes that appear more than once in the child path other than the starting node.
 # We use this crossover process to generate a child path from every pair of parent paths that are appended to the new generation population.
 # In addition, elitism is implemented during the crossover process through appending both parent paths used to create a child path to the new generation population.
+
 # Mutation process:
 # Determines how often an offspring state has a random mutation to its tsp path.
 # After an offspring has been generated, a pair of cities in its tsp path swap positions
@@ -198,7 +203,7 @@ class HillClimbingSolverForTSP:
 # If the random probability is less than or equal to the mutation rate, then two randomly selected cities will swap positions in the tsp path.
 
 # Assumptions:
-#   a. For every tsp problem, each node must be connected to every other node through edges in the graph. (This assumption is fine)
+#   a. For every tsp problem, each node must be connected to every other node through edges in the graph.
 
 class GeneticAlgorithmSolverForTSP:
 
