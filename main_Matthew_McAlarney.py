@@ -60,20 +60,18 @@
 # This means that we need to begin by generating an initial path
 # that visits all nodes at random to begin comparing against in the run_hill_climbing_algorithm function.
 
-# Assumptions
+# Assumptions:
 #   a. For every tsp problem, each node must be connected to every other node through edges in the graph. (This assumption is fine)
 
 # ---------------
 
 # Important notes for part b
 
-
 # ---------------
 
 # Part a - Hill-climbing algorithm implementation to solve TSPs:
-import operator
+
 import random
-from operator import itemgetter
 
 
 class HillClimbingSolverForTSP:
@@ -171,17 +169,17 @@ class HillClimbingSolverForTSP:
 #   d. Crossover
 #   e. Mutation
 
-# State space: -
+# State space:
 # Each state contains the current generated path and the length of the path.
 # A gene is a single node/city, and an individual is a tsp path made up of some number of genes.
-# Initial population: -
+# Initial population:
 # A list of tsp paths randomly generated and used to start running the rest of the algorithm.
-# Fitness score: -
+# Fitness score:
 # The fitness score of each state corresponds to the length of the tsp path.
 # In this case, the fitness score is calculated by subtracting the length of the tsp path from 500,
 # which is a trivially chosen integer.
-# Shorter tsp paths will have higher fitness scores and longer tsp paths will have lower fitness scores.
-# Selection process: -
+# Shorter tsp paths will have higher fitness scores and longer tsp paths will have lower fitness scores in this case.
+# Selection process:
 # States selected to be parents of the next generation are selected from a list of paths with fitness scores
 # using tournament selection: https://www.geeksforgeeks.org/tournament-selection-ga/
 # From a random selection of n individuals from the population, the most fit individual is selected as a parent for the next generation of paths. The selection number n is calculated as the number of edge connections each node has to every other node.
@@ -191,12 +189,16 @@ class HillClimbingSolverForTSP:
 # The child path consists of a randomly selected part of the path of the first parent and the part of the path
 # of the second parent that does not appear in the randomly selected part. For the tsp problem,
 # this type of crossover ensures that there are no nodes that appear more than once in the child path other than the starting node.
-# We use this crossover process to generate two child paths from two parent paths that are appended to the new generation population.
-# In addition, elitism is implemented during the crossover process through appending both parent paths used to create the two child paths to the new generation population.
+# We use this crossover process to generate a child path from every pair of parent paths that are appended to the new generation population.
+# In addition, elitism is implemented during the crossover process through appending both parent paths used to create a child path to the new generation population.
 # Mutation process:
 # Determines how often an offspring state has a random mutation to its tsp path.
-# When an offspring has been generated, a pair of cities in its tsp path swap positions
-# with probability less than or equal to the mutation rate.
+# After an offspring has been generated, a pair of cities in its tsp path swap positions
+# with probability less than or equal to the mutation rate. In this program, the mutation rate is set to 0.03 and a random probability is generated.
+# If the random probability is less than or equal to the mutation rate, then two randomly selected cities will swap positions in the tsp path.
+
+# Assumptions:
+#   a. For every tsp problem, each node must be connected to every other node through edges in the graph. (This assumption is fine)
 
 class GeneticAlgorithmSolverForTSP:
 
@@ -265,22 +267,28 @@ class GeneticAlgorithmSolverForTSP:
         child_path = []
         first_child_component = []
         second_child_component = []
-        print(type(most_fit_parent_path_index_1))
         random_index_1 = random.randint(0, len(population[most_fit_parent_path_index_1]) - 1)
         random_index_2 = random.randint(0, len(population[most_fit_parent_path_index_1]) - 1)
         sub_path_start_index = min(random_index_1, random_index_2)
         sub_path_end_index = max(random_index_1, random_index_2)
+        first_child_component_index_placeholder = 0
+        second_child_component_index_placeholder = 0
         for i1 in range(sub_path_start_index, sub_path_end_index):
             first_child_component.append((population[most_fit_parent_path_index_1])[i1])
         for i2 in range(len(population[most_fit_parent_path_index_2])):
             if (population[most_fit_parent_path_index_2])[i2] not in first_child_component:
                 second_child_component.append((population[most_fit_parent_path_index_2])[i2])
         for i3 in range(len(first_child_component) + len(second_child_component)):
-            if sub_path_start_index <= i3 <= sub_path_end_index:
-                child_path.append(first_child_component[i3])
+            if sub_path_start_index <= i3 < sub_path_end_index:
+                child_path.append(first_child_component[first_child_component_index_placeholder])
+                first_child_component_index_placeholder += 1
             else:
-                child_path.append(second_child_component[i3])
-        child_path[len(child_path) - 1] = child_path[0]
+                child_path.append(second_child_component[second_child_component_index_placeholder])
+                second_child_component_index_placeholder += 1
+        if (len(first_child_component) + len(second_child_component)) < len(self.get_node_list()) + 1:
+            child_path.append(child_path[0])
+        else:
+            child_path[len(child_path) - 1] = child_path[0]
         return child_path
 
     def generate_new_generation_population(self, most_fit_parent_paths_indices, population):
@@ -343,19 +351,18 @@ class GeneticAlgorithmSolverForTSP:
         population = self.generate_initial_population()
         fitness_score_for_each_population_index_list = self.calculate_fitness_scores_for_each_population_index(
             population)
-        current_highest_fitness_score = self.get_highest_population_fitness_score(
+        current_highest_fitness_score, shortest_path_index = self.get_highest_population_fitness_score(
             fitness_score_for_each_population_index_list)
         shortest_path = []
 
-        # Run the algorithm for 50 generations to ensure that enough time has elapsed to increase the likelihood of selecting the fittest individual:
-        for i in range(50):
+        # Run the algorithm for 100 generations to ensure that enough time has elapsed to increase the likelihood of selecting the fittest individual:
+        for i in range(100):
             most_fit_parent_paths_indices = self.select_most_fit_parent_paths_indices(
                 fitness_score_for_each_population_index_list)
-            print(most_fit_parent_paths_indices)
             new_generation_population = self.generate_new_generation_population(most_fit_parent_paths_indices,
                                                                                 population)
             mutated_population = self.generate_mutated_paths(new_generation_population)
-            population = mutated_population
+            population = mutated_population.copy()
             fitness_score_for_each_population_index_list = self.calculate_fitness_scores_for_each_population_index(
                 population)
             current_highest_fitness_score, shortest_path_index = self.get_highest_population_fitness_score(
@@ -372,7 +379,7 @@ class GeneticAlgorithmSolverForTSP:
 
 # Test data used to test both the hill-climbing and genetic algorithm implementations:
 
-# A GraphSegment class that creates an object that puts together the following information:
+# A GraphEdge class that creates an object that puts together the following information:
 # a starting node, ending node, and the distance from the starting node to the ending node.
 # This class is used to construct test data below.
 class GraphEdge:
@@ -419,22 +426,9 @@ traveling_sales_person_graph_3 = {
 hill_climbing_test_3 = HillClimbingSolverForTSP(traveling_sales_person_graph_3, 3)
 hill_climbing_test_3.run_hill_climbing_algorithm()
 
-'''
-# Test Configuration 4
-traveling_sales_person_graph_4 = {
-    'A': [GraphEdge('A', 'B', 10), GraphEdge('A', 'C', 20)],
-    'B': [GraphEdge('B', 'A', 10), GraphEdge('B', 'C', 25), GraphEdge('B', 'D', 35)],
-    'C': [GraphEdge('C', 'A', 20), GraphEdge('C', 'B', 25), GraphEdge('C', 'D', 30)],
-    'D': [GraphEdge('D', 'B', 35), GraphEdge('D', 'C', 30)]
-}
-
-hill_climbing_test_3 = HillClimbingSolverForTSP(traveling_sales_person_graph_3, 3)
-hill_climbing_test_3.run_hill_climbing_algorithm()
-'''
-
 # part b test data:
 
-# Test Configuration 1
+# Test Configuration 4
 traveling_sales_person_graph_4 = {
     'A': [GraphEdge('A', 'B', 40), GraphEdge('A', 'C', 60), GraphEdge('A', 'D', 10)],
     'B': [GraphEdge('B', 'A', 40), GraphEdge('B', 'C', 50), GraphEdge('B', 'D', 20)],
@@ -445,7 +439,7 @@ traveling_sales_person_graph_4 = {
 genetic_algorithm_test_4 = GeneticAlgorithmSolverForTSP(traveling_sales_person_graph_4, 4)
 genetic_algorithm_test_4.run_genetic_algorithm()
 
-# Test Configuration 2
+# Test Configuration 5
 traveling_sales_person_graph_5 = {
     'A': [GraphEdge('A', 'B', 10), GraphEdge('A', 'C', 20), GraphEdge('A', 'D', 15)],
     'B': [GraphEdge('B', 'A', 10), GraphEdge('B', 'C', 25), GraphEdge('B', 'D', 35)],
@@ -456,7 +450,7 @@ traveling_sales_person_graph_5 = {
 genetic_algorithm_test_5 = GeneticAlgorithmSolverForTSP(traveling_sales_person_graph_5, 5)
 genetic_algorithm_test_5.run_genetic_algorithm()
 
-# Test Configuration 3
+# Test Configuration 6
 traveling_sales_person_graph_6 = {
     'A': [GraphEdge('A', 'B', 12), GraphEdge('A', 'C', 10), GraphEdge('A', 'D', 19), GraphEdge('A', 'E', 8)],
     'B': [GraphEdge('B', 'A', 12), GraphEdge('B', 'C', 3), GraphEdge('B', 'D', 7), GraphEdge('B', 'E', 2)],

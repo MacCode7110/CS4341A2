@@ -65,8 +65,8 @@ train could run off onto the floor.
         
     c. Explain why removing any one of the “fork” pieces makes the problem unsolvable.
 
-        Removing any one of the "fork" (switch) pieces makes the problem unsolvable because this would result in an incorrect number of branches preventing the construction of a complete railway. 
-        When the incorrect number of fork pieces and branches are present, the railway is guaranteed to contain at least one loose end, which would make it impossible for a search algorithm to find a solution (path to the goal state).
+        Removing any one of the "fork" (switch) pieces makes the problem unsolvable because this would result in an incorrect number of railway branches, which would prevent the construction of a complete railway. 
+        When the incorrect number of fork pieces and railway branches are present, the railway is guaranteed to contain at least one loose end, which would make it impossible for a search algorithm to find a solution (path to the goal state).
 
     d. Give an upper bound on the total size of the state space defined by your formulation.
     (Hint: think about the maximum branching factor for the construction process and the
