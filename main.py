@@ -171,21 +171,21 @@ class HillClimbingSolverForTSP:
 #   d. Crossover
 #   e. Mutation
 
-# State space:
+# State space: -
 # Each state contains the current generated path and the length of the path.
 # A gene is a single node/city, and an individual is a tsp path made up of some number of genes.
-# Initial population:
+# Initial population: -
 # A list of tsp paths randomly generated and used to start running the rest of the algorithm.
-# Fitness score:
+# Fitness score: -
 # The fitness score of each state corresponds to the length of the tsp path.
-# In this case, the fitness score is calculated by subtracting the length of the tsp path from 100,
+# In this case, the fitness score is calculated by subtracting the length of the tsp path from 500,
 # which is a trivially chosen integer.
 # Shorter tsp paths will have higher fitness scores and longer tsp paths will have lower fitness scores.
-# Selection process:
+# Selection process: -
 # States selected to be parents of the next generation are selected from a list of paths with fitness scores
 # using tournament selection: https://www.geeksforgeeks.org/tournament-selection-ga/
-# From a random selection of n individuals from the population, the most fit individual is selected as a parent for the next generation of paths.
-# This process is repeated twice so that two of the most fit parents from their respective group selections can then crossover.
+# From a random selection of n individuals from the population, the most fit individual is selected as a parent for the next generation of paths. The selection number n is calculated as the number of edge connections each node has to every other node.
+# This process is repeated while the selection number is less than or equal to the size of the population. The size of the population in the selection loop decreases; parents selected as the fittest individuals from a selection are excluded from the population size in the next iteration of the selection loop so that they are not reselected for a tournament again. This exclusion prevents duplicate fittest parent paths from being returned in the select_parent_path_indices function. For the first two test configurations for the algorithm, the 10 fittest parent paths are selected from their respective group selections. These fittest parent paths are then used in the crossover process.
 # Crossover process:
 # Parts of the parent paths are combined to form a child path using a process called Order One Crossover: https://www.baeldung.com/cs/ga-order-one-crossover.
 # The child path consists of a randomly selected part of the path of the first parent and the part of the path
@@ -233,26 +233,31 @@ class GeneticAlgorithmSolverForTSP:
         return initial_population
 
     # Tournament selection executed in select_parent_paths:
-    def select_parent_paths_indices(self, fitness_score_for_each_population_index_list):
+    def select_most_fit_parent_paths_indices(self, fitness_score_for_each_population_index_list):
         most_fit_parent_paths_indices_and_fitness_scores_list = []
         most_fit_parent_paths_indices = []
-        selection_number = (len(list(self.tsp_problem.keys())))
-        for i in range(10):
-            fitness_score_for_each_population_index_list_copy = fitness_score_for_each_population_index_list.copy()
+        selection_number = (len(list(self.tsp_problem.keys()))) - 1
+        fitness_score_for_each_population_index_list_copy = fitness_score_for_each_population_index_list.copy()
+        parents_to_remove_from_fitness_score_for_each_population_index_list_copy = []
+        while selection_number <= len(fitness_score_for_each_population_index_list_copy):
             selected_parent_paths_indices_and_fitness_scores_list = []
             selected_fitness_scores_placeholder_list = []
-            for j in range(selection_number):
+            for i1 in range(selection_number):
                 dictionary = fitness_score_for_each_population_index_list_copy[
                     random.randint(0, (len(fitness_score_for_each_population_index_list_copy)) - 1)]
                 selected_parent_paths_indices_and_fitness_scores_list.append(dictionary)
-                selected_fitness_scores_placeholder_list.append([v for v in dictionary.values()][0])
+                selected_fitness_scores_placeholder_list.append([val for val in dictionary.values()][0])
                 fitness_score_for_each_population_index_list_copy.remove(dictionary)
             index_of_highest_fitness_score = selected_fitness_scores_placeholder_list.index(
-                max(selected_fitness_scores_placeholder_list))
+            max(selected_fitness_scores_placeholder_list))
             most_fit_parent_paths_indices_and_fitness_scores_list.append(
-                selected_parent_paths_indices_and_fitness_scores_list[index_of_highest_fitness_score])
-        for k in range(len(most_fit_parent_paths_indices_and_fitness_scores_list)):  # 254
-            most_fit_parent_paths_indices.append(most_fit_parent_paths_indices_and_fitness_scores_list[k].keys())
+            selected_parent_paths_indices_and_fitness_scores_list[index_of_highest_fitness_score])
+            parents_to_remove_from_fitness_score_for_each_population_index_list_copy.append(selected_parent_paths_indices_and_fitness_scores_list[index_of_highest_fitness_score])
+            fitness_score_for_each_population_index_list_copy = fitness_score_for_each_population_index_list.copy()
+            for i2 in range(len(parents_to_remove_from_fitness_score_for_each_population_index_list_copy)):
+                fitness_score_for_each_population_index_list_copy.remove(parents_to_remove_from_fitness_score_for_each_population_index_list_copy[i2])
+        for i3 in range(len(most_fit_parent_paths_indices_and_fitness_scores_list)):
+            most_fit_parent_paths_indices.append([key for key in most_fit_parent_paths_indices_and_fitness_scores_list[i3].keys()][0])
         return most_fit_parent_paths_indices
 
     # Order one crossover executed in perform_order_one_crossover_on_parent_paths:
@@ -261,20 +266,20 @@ class GeneticAlgorithmSolverForTSP:
         first_child_component = []
         second_child_component = []
         print(type(most_fit_parent_path_index_1))
-        random_index_1 = random.randint(0, len(population[(most_fit_parent_path_index_1[0])]) - 1)
-        random_index_2 = random.randint(0, len(population[(most_fit_parent_path_index_1[0])]) - 1)
+        random_index_1 = random.randint(0, len(population[most_fit_parent_path_index_1]) - 1)
+        random_index_2 = random.randint(0, len(population[most_fit_parent_path_index_1]) - 1)
         sub_path_start_index = min(random_index_1, random_index_2)
         sub_path_end_index = max(random_index_1, random_index_2)
-        for i in range(sub_path_start_index, sub_path_end_index):
-            first_child_component.append((population[most_fit_parent_path_index_1])[i])
-        for j in range(len(population[most_fit_parent_path_index_2])):
-            if (population[most_fit_parent_path_index_2])[j] not in first_child_component:
-                second_child_component.append((population[most_fit_parent_path_index_2])[j])
-        for k in range(len(first_child_component) + len(second_child_component)):
-            if sub_path_start_index <= k <= sub_path_end_index:
-                child_path.append(first_child_component[k])
+        for i1 in range(sub_path_start_index, sub_path_end_index):
+            first_child_component.append((population[most_fit_parent_path_index_1])[i1])
+        for i2 in range(len(population[most_fit_parent_path_index_2])):
+            if (population[most_fit_parent_path_index_2])[i2] not in first_child_component:
+                second_child_component.append((population[most_fit_parent_path_index_2])[i2])
+        for i3 in range(len(first_child_component) + len(second_child_component)):
+            if sub_path_start_index <= i3 <= sub_path_end_index:
+                child_path.append(first_child_component[i3])
             else:
-                child_path.append(second_child_component[k])
+                child_path.append(second_child_component[i3])
         child_path[len(child_path) - 1] = child_path[0]
         return child_path
 
@@ -285,7 +290,6 @@ class GeneticAlgorithmSolverForTSP:
             new_generation_population.append(child_path)
             # Elitism implemented in line below to guarantee that overall population fitness is unlikely to decrease over time:
             new_generation_population.append(population[(most_fit_parent_paths_indices[i])])
-            # Choose a top k of parents to include im next generation.
         return new_generation_population
 
     def mutate_individual_path(self, path):
@@ -326,7 +330,7 @@ class GeneticAlgorithmSolverForTSP:
         fitness_scores_for_each_population_index_list = []
         for i in range(len(population)):
             fitness_scores_for_each_population_index_list.append(
-                {i: (100 - self.calculate_path_length(population[i]))})
+                {i: (500 - self.calculate_path_length(population[i]))})
         return fitness_scores_for_each_population_index_list
 
     def get_highest_population_fitness_score(self, fitness_score_for_each_population_index_list):
@@ -343,10 +347,11 @@ class GeneticAlgorithmSolverForTSP:
             fitness_score_for_each_population_index_list)
         shortest_path = []
 
-        # Run the algorithm for 50 generations to ensure that enough time has elapsed:
-        for i in range(50):  # Running for a number of generations is fine.
-            most_fit_parent_paths_indices = self.select_parent_paths_indices(
+        # Run the algorithm for 50 generations to ensure that enough time has elapsed to increase the likelihood of selecting the fittest individual:
+        for i in range(50):
+            most_fit_parent_paths_indices = self.select_most_fit_parent_paths_indices(
                 fitness_score_for_each_population_index_list)
+            print(most_fit_parent_paths_indices)
             new_generation_population = self.generate_new_generation_population(most_fit_parent_paths_indices,
                                                                                 population)
             mutated_population = self.generate_mutated_paths(new_generation_population)
