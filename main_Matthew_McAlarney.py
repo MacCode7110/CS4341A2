@@ -14,6 +14,20 @@
 
 # ---------------
 
+# For reference, here is an example output that I got when I ran this python file:
+
+# C:\Python39\python.exe C:\Users\17818\CS4341IntroToAIProjects\CS4341A2\main_Matthew_McAlarney.py
+# Hill Climbing Algorithm Output: The shortest path that visits each node exactly once and returns to the starting node for Traveling Salesmen Problem Configuration 1 is BCDAB with a length of 130
+# Hill Climbing Algorithm Output: The shortest path that visits each node exactly once and returns to the starting node for Traveling Salesmen Problem Configuration 2 is BADCB with a length of 80
+# Hill Climbing Algorithm Output: The shortest path that visits each node exactly once and returns to the starting node for Traveling Salesmen Problem Configuration 3 is CBDEAC with a length of 32
+# Genetic Algorithm Output: The shortest path that visits each node exactly once and returns to the starting node for Traveling Salesmen Problem Configuration 4 is CDABC with a length of 130 and a fitness score of 370
+# Genetic Algorithm Output: The shortest path that visits each node exactly once and returns to the starting node for Traveling Salesmen Problem Configuration 5 is ADCBA with a length of 80 and a fitness score of 420
+# Genetic Algorithm Output: The shortest path that visits each node exactly once and returns to the starting node for Traveling Salesmen Problem Configuration 6 is ACBDEA with a length of 32 and a fitness score of 468
+#
+# Process finished with exit code 0
+
+# ---------------
+
 # Important notes for part a:
 
 # Referenced GeeksForGeeks for travelling salesperson problem definition
@@ -174,7 +188,7 @@ class HillClimbingSolverForTSP:
 # A gene is a single node/city, and an individual is a tsp path made up of some number of genes.
 
 # Initial population:
-# A list of tsp paths randomly generated and used to start running the rest of the algorithm.
+# A list of tsp paths randomly generated and used to start running the rest of the algorithm. The size of the initial population is the total number of cities in the problem graph multiplied by 3.
 
 # Fitness score:
 # The fitness score of each state corresponds to the length of the tsp path.
@@ -186,7 +200,7 @@ class HillClimbingSolverForTSP:
 # States selected to be parents of the next generation are selected from a list of paths with fitness scores
 # using tournament selection: https://www.geeksforgeeks.org/tournament-selection-ga/
 # From a random selection of n individuals from the population, the most fit individual is selected as a parent for the next generation of paths. The selection number n is calculated as the number of edge connections each node has to every other node.
-# This process is repeated while the selection number is less than or equal to the size of the population. The size of the population in the selection loop decreases; parents selected as the fittest individuals from a selection are excluded from the population size in the next iteration of the selection loop so that they are not reselected for a tournament again. This exclusion prevents duplicate fittest parent paths from being returned in the select_parent_path_indices function. For the first two test configurations for the algorithm, the 10 fittest parent paths are selected from their respective group selections. These fittest parent paths are then used in the crossover process.
+# This process is repeated while the selection number is less than or equal to the size of the population. The size of the population in the selection loop decreases; parents selected as the fittest individuals from a selection are excluded from the population size in the next iteration of the selection loop so that they are not reselected for a tournament again. This exclusion prevents duplicate fittest parent paths from being returned in the select_parent_path_indices function. For the first two test configurations for the algorithm, the 9 fittest parent paths are selected from their respective group selections. These fittest parent paths are then used in the crossover process.
 
 # Crossover process:
 # Parts of the parent paths are combined to form a child path using a process called Order One Crossover: https://www.baeldung.com/cs/ga-order-one-crossover.
@@ -197,10 +211,10 @@ class HillClimbingSolverForTSP:
 # In addition, elitism is implemented during the crossover process through appending both parent paths used to create a child path to the new generation population.
 
 # Mutation process:
-# Determines how often an offspring state has a random mutation to its tsp path.
-# After an offspring has been generated, a pair of cities in its tsp path swap positions
+# Regulates how often an offspring state has a random mutation to its tsp path.
+# After an offspring has been generated, a pair of cities (excluding the last city/return to starting point to prevent duplicate cities from resulting and possibly sitting adjacent to each other) in its tsp path swap positions
 # with probability less than or equal to the mutation rate. In this program, the mutation rate is set to 0.03 and a random probability is generated.
-# If the random probability is less than or equal to the mutation rate, then two randomly selected cities will swap positions in the tsp path.
+# If the random probability is less than or equal to the mutation rate of 0.03, then two randomly selected cities (again excluding the last city/return to starting point to prevent duplicate cities from resulting and possibly sitting adjacent to each other) will swap positions in the tsp path.
 
 # Assumptions:
 #   a. For every tsp problem, each node must be connected to every other node through edges in the graph.
@@ -218,8 +232,8 @@ class GeneticAlgorithmSolverForTSP:
         node_list = self.get_node_list()
         starting_node = ''
         individual_path = []
-        for i in range(len(node_list)):
-            if i == 0:
+        for i1 in range(len(node_list)):
+            if i1 == 0:
                 starting_node = node_list[random.randint(0, (len(node_list) - 1))]
                 individual_path.append(starting_node)
                 node_list.remove(starting_node)
@@ -235,7 +249,7 @@ class GeneticAlgorithmSolverForTSP:
     def generate_initial_population(self):
         initial_population = []
         population_size = (len(list(self.tsp_problem.keys()))) * 3
-        for i in range(population_size):
+        for i1 in range(population_size):
             initial_population.append(self.generate_individual_path())
         return initial_population
 
@@ -298,19 +312,19 @@ class GeneticAlgorithmSolverForTSP:
 
     def generate_new_generation_population(self, most_fit_parent_paths_indices, population):
         new_generation_population = []
-        for i in range(len(most_fit_parent_paths_indices) - 2):
-            child_path = self.perform_order_one_crossover_on_parent_paths(most_fit_parent_paths_indices[i], most_fit_parent_paths_indices[i+1], population)
+        for i1 in range(len(most_fit_parent_paths_indices) - 2):
+            child_path = self.perform_order_one_crossover_on_parent_paths(most_fit_parent_paths_indices[i1], most_fit_parent_paths_indices[i1+1], population)
             new_generation_population.append(child_path)
             # Elitism implemented in line below to guarantee that overall population fitness is unlikely to decrease over time:
-            new_generation_population.append(population[(most_fit_parent_paths_indices[i])])
+            new_generation_population.append(population[(most_fit_parent_paths_indices[i1])])
         return new_generation_population
 
     def mutate_individual_path(self, path):
         mutation_rate = 0.03
-        for i in range(len(path)):
+        for i1 in range(len(path) - 1):
             if random.random() <= mutation_rate:
-                random_index_1 = random.randint(0, len(path) - 1)
-                random_index_2 = random.randint(0, len(path) - 1)
+                random_index_1 = random.randint(0, len(path) - 2)
+                random_index_2 = random.randint(0, len(path) - 2)
                 placeholder_node = path[random_index_1]
                 path[random_index_1] = path[random_index_2]
                 path[random_index_2] = placeholder_node
@@ -319,37 +333,37 @@ class GeneticAlgorithmSolverForTSP:
 
     def generate_mutated_paths(self, population):
         mutated_population = []
-        for i in range(len(population)):
-            mutated_population.append(self.mutate_individual_path(population[i]))
+        for i1 in range(len(population)):
+            mutated_population.append(self.mutate_individual_path(population[i1]))
         return mutated_population
 
     def get_graph_edge_object(self, end_node, graph_edge_list):
-        for i in range(len(graph_edge_list)):
-            if graph_edge_list[i].ending_node == end_node:
-                return graph_edge_list[i]
+        for i1 in range(len(graph_edge_list)):
+            if graph_edge_list[i1].ending_node == end_node:
+                return graph_edge_list[i1]
 
     def calculate_path_length(self, path):
         path_length = 0
         node_list = self.get_node_list()
-        for i in range(len(path)):
-            if path[i] in node_list:
-                if i < len(path) - 1:
-                    graph_edge_list = self.tsp_problem[path[i]]
-                    graph_edge_object = self.get_graph_edge_object(path[i + 1], graph_edge_list)
+        for i1 in range(len(path)):
+            if path[i1] in node_list:
+                if i1 < len(path) - 1:
+                    graph_edge_list = self.tsp_problem[path[i1]]
+                    graph_edge_object = self.get_graph_edge_object(path[i1 + 1], graph_edge_list)
                     path_length += graph_edge_object.distance
         return path_length
 
     def calculate_fitness_scores_for_each_population_index(self, population):
         fitness_scores_for_each_population_index_list = []
-        for i in range(len(population)):
+        for i1 in range(len(population)):
             fitness_scores_for_each_population_index_list.append(
-                {i: (500 - self.calculate_path_length(population[i]))})
+                {i1: (500 - self.calculate_path_length(population[i1]))})
         return fitness_scores_for_each_population_index_list
 
     def get_highest_population_fitness_score(self, fitness_score_for_each_population_index_list):
         fitness_score_list = []
-        for i in range(len(fitness_score_for_each_population_index_list)):
-            fitness_score_list.append(int(fitness_score_for_each_population_index_list[i][i]))
+        for i1 in range(len(fitness_score_for_each_population_index_list)):
+            fitness_score_list.append(int(fitness_score_for_each_population_index_list[i1][i1]))
         return max(fitness_score_list), fitness_score_list.index(max(fitness_score_list))
 
     def run_genetic_algorithm(self):
@@ -360,12 +374,12 @@ class GeneticAlgorithmSolverForTSP:
             fitness_score_for_each_population_index_list)
         shortest_path = []
 
-        # Run the algorithm for 100 generations to ensure that enough time has elapsed to increase the likelihood of selecting the fittest individual:
-        for i in range(100):
+        # Run the algorithm for 10 generations to ensure that enough time has elapsed to increase the likelihood of selecting the fittest individual:
+        for i1 in range(10):
             most_fit_parent_paths_indices = self.select_most_fit_parent_paths_indices(
                 fitness_score_for_each_population_index_list)
             new_generation_population = self.generate_new_generation_population(most_fit_parent_paths_indices,
-                                                                                population)
+                                                                         population)
             mutated_population = self.generate_mutated_paths(new_generation_population)
             population = mutated_population.copy()
             fitness_score_for_each_population_index_list = self.calculate_fitness_scores_for_each_population_index(
@@ -379,7 +393,7 @@ class GeneticAlgorithmSolverForTSP:
               "for Traveling Salesmen Problem Configuration " + str(self.problem_configuration_number) + " is " +
               "".join(shortest_path) +
               " with a length of " + str(
-            self.calculate_path_length(shortest_path)) + " and a fitness score of " + current_highest_fitness_score)
+            str(self.calculate_path_length(shortest_path))) + " and a fitness score of " + str(current_highest_fitness_score))
 
 
 # Test data used to test both the hill-climbing and genetic algorithm implementations:
