@@ -79,10 +79,6 @@
 
 # ---------------
 
-# Important notes for part b
-
-# ---------------
-
 # Part a - Hill-climbing algorithm implementation to solve TSPs:
 
 import random
@@ -173,8 +169,11 @@ class HillClimbingSolverForTSP:
               "".join(path) +
               " with a length of " + str(path_length))
 
+# ---------------
 
 # Part b - Genetic algorithm implementation to solve TSPs:
+
+# Important notes for part b
 
 # Genetic algorithm steps followed below:
 #   a. Initial population
@@ -218,6 +217,8 @@ class HillClimbingSolverForTSP:
 
 # Assumptions:
 #   a. For every tsp problem, each node must be connected to every other node through edges in the graph.
+
+# ---------------
 
 class GeneticAlgorithmSolverForTSP:
 
